@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
+from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -26,7 +27,7 @@ def index(request):
 
     for month in months:
         capitalized_month = month.capitalize()
-        month_path = reverse("month-challenges", args=[month])
+        month_path = reverse("month-challenges", args=[month ])
         list_items += f'<li><a href="{month_path}">{capitalized_month}</a></li>'
     
     response_data = f"<ul>{list_items}</ul>"
@@ -36,10 +37,9 @@ def index(request):
 def monthly_challenges(request, month: str):
     try:
         challenge_txt = challenges[month]
-        response_data = f"<h1>{challenge_txt}</h1>"
-        return HttpResponse(response_data)
+        return render(request, "challenges/challenge.html")
     except:
-        return HttpResponseNotFound("<h1>This month is not supoorted!</h1>")
+        return HttpResponseNotFound("<h1>This month is not supported!</h1>")
 
 
 def monthly_challenges_by_num(request, month: int):
