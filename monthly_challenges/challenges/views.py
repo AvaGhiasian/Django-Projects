@@ -8,14 +8,14 @@ from django.template.loader import render_to_string
 
 challenges = {
     "january": "Eat no meat for the entire month!",
-    "february": "Walk for at least 20 minutes every day!",
+    "february": None,
     "march": "Learn django for at least 20 minutes every day!",
     "april": "Drink 8 cups of water a day!",
     "may": "Eat an apple a day!",
     "june": "Study for 5 hours every day!",
     "july": "Get 8 hours of sleep every day!",
-    "august": "Eat vegtables!",
-    "september": "Run 30 minutes every day!",
+    "august": "Eat vegetables!",
+    "september": None,
     "october": "Swim for at least 1 hour every week!",
     "november": "Ride a bicycle for at least 20 minutes every day!",
     "december": "Visit family for at least 20 minutes every other day!"
@@ -25,14 +25,9 @@ def index(request):
     list_items = ""
     months = list(challenges.keys())
 
-    for month in months:
-        capitalized_month = month.capitalize()
-        month_path = reverse("month-challenges", args=[month ])
-        list_items += f'<li><a href="{month_path}">{capitalized_month}</a></li>'
-    
-    response_data = f"<ul>{list_items}</ul>"
-    return HttpResponse(response_data)
-
+    return render(request, "challenges/index.html", {
+        "months": months
+    })
 
 def monthly_challenges(request, month: str):
     try:
@@ -50,18 +45,18 @@ def monthly_challenges_by_num(request, month: int):
         months = list(challenges.keys())
         redirect_month = months[month - 1]
         redirect_path = reverse(
-            "month-challenges", args=[redirect_month])  # /challange/
+            "month-challenges", args=[redirect_month])  # /challenge/
         return HttpResponseRedirect(redirect_path)
     except:
-        return HttpResponseNotFound("This month is not supoorted!")
+        return HttpResponseNotFound("This month is not supported!")
 
     """
     months = list(challenges.keys())
 
     if month > len(months):
-        return HttpResponseNotFound("This month is not supoorted!")
+        return HttpResponseNotFound("This month is not supported!")
     
     redirect_month = months[month - 1]
-    redirect_path = reverse("month-challenges", args=[redirect_month]) #/challange/
+    redirect_path = reverse("month-challenges", args=[redirect_month]) #/challenge/
     return HttpResponseRedirect(redirect_path)
     """

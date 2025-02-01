@@ -10,5 +10,8 @@
           "--extensionDevelopmentPath=${workspaceFolder}"
         ]
       }
+    ],
+    "cSpell.words": [
+      "endfor"
     ]
   }
