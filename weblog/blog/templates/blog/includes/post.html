@@ -1,0 +1,15 @@
+{% load static %}
+
+<li>
+    <article class="post">
+        <a href="{% url "post-detail-page" slug="the-seashore"%}">
+            <img src="{% static "blog/images/sea.jpg" %}" alt="Mountain Hiking"/>
+            <div class="post__content">
+                <h3>Relaxing By the Shore</h3>
+                <p>There's nothing like the feeling that you get when you relax by the sea side!
+                    It is an absolute silence.
+                </p>
+            </div>
+        </a>
+    </article>
+</li>
