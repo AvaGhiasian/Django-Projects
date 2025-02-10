@@ -13,10 +13,13 @@ class Book(models.Model):
         validators=[MinValueValidator(1), MinValueValidator(5)])
     author = models.CharField(null=True, max_length=100)
     is_best_selling = models.BooleanField(default=False)
-    slug = models.SlugField(default="", null=False) # if book name is Harry Potter auto populate to harry-potter
+    slug = models.SlugField(default="", null=False, db_index=True, primary_key=True) 
+    # if book name is Harry Potter auto populate to harry-potter
+    # db_index are a technical detail, means that DB will save the value in a way that makes searching them a bit more efficient.
+    # so creating a field like this db_index=True makes searching the field quicker.
 
     def get_absolute_url(self):
-        return reverse("book-detail", args=[self.id])
+        return reverse("book-detail", args=[self.slug])
     
     def save(self, *args, **kwargs):
         """
