@@ -1,12 +1,32 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import ReviewForm
+from django.views import View
 
 # Create your views here.
 
 
-def review(request):
-    """
+class ReviewView(View):
+    def get(self, request):
+        form = ReviewForm()
+
+        return render(request, "reviews/review.html", {
+            "form": form
+        })
+
+    def post(self, request):
+        form = ReviewForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("/thank-you")
+
+        return render(request, "reviews/review.html", {
+            "form": form
+        })
+
+
+"""def review(request):
     method gives access to the method that was used for submitting the data
     .POST gives access to the data itself
     POST is a dict where keys are the names sat on the inputs in the form,
@@ -29,25 +49,25 @@ def review(request):
         "has_error": False
     })
 
-    """
     if request.method == "POST":
         form = ReviewForm(request.POST)
         if form.is_valid():
-            """
+            
             form.is_valid() is defines in Form class and does 3 things:
             1- validating the input(checking if it is not empty)
             2- returns true if form is valid
             3- if data is valid, it'll populate another field with that valid data
-            """
+            
             form.save()
             return HttpResponseRedirect("/thank-you")
     else:
-        """else it is a GET request: """
+        else it is a GET request: 
         form = ReviewForm()
 
     return render(request, "reviews/review.html", {
         "form": form
     })
+"""
 
 
 def thank_you(request):
