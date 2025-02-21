@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .forms import ReviewForm
-from .models import Review
 
 # Create your views here.
 
@@ -35,16 +34,12 @@ def review(request):
         form = ReviewForm(request.POST)
         if form.is_valid():
             """
-        form.is_valid() is defines in Form class and does 3 things:
-        1- validating the input(checking if it is not empty)
-        2- returns true if form is valid
-        3- if data is valid, it'll populate another field with that valid data
-        """
-            review = Review(
-                user_name=form.cleaned_data['user_name'],
-                review_text=form.cleaned_data['review_text'],
-                rating=form.cleaned_data['rating'])
-            review.save()  # field that contains cleaned data
+            form.is_valid() is defines in Form class and does 3 things:
+            1- validating the input(checking if it is not empty)
+            2- returns true if form is valid
+            3- if data is valid, it'll populate another field with that valid data
+            """
+            form.save()
             return HttpResponseRedirect("/thank-you")
     else:
         """else it is a GET request: """

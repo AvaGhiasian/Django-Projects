@@ -25,5 +25,16 @@ class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review  # pointing at Review, This connects Review Form to Review Model
         # fields = ['user_name', 'review_text', 'rating'] : which fields from models should be part of the form
-        fields = '__all__'
+        fields = "__all__"
         exclude = ['owner_comment'] # fields that wants not to be included
+        labels = {
+            "user_name" : "Your Name",
+            "review_text" : "Your Feedback",
+            "rating": "Your Rating"
+        }
+        error_messages = {
+            "user_name": {
+                "required": "Your name must not be empty!",
+                "max_length": "Please enter a shorter name!"
+            }
+        }
