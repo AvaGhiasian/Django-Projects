@@ -1,14 +1,8 @@
-{% load static %}
+{% extends "reviews/base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Reviews</title>
-    <link rel="stylesheet" href="{% static "reviews/styles.css" %}">
-</head>
-<body>
+{% block title%} Your Review {% endblock%}
+
+{% block content%}
     <form action="/" method="POST"> <!-- action="/" : data is sent to main domain -->
         <!-- manually adding forms
          {% if has_error %}
@@ -26,5 +20,4 @@
         {% endfor %}
         <button type="submit">Send</button>
     </form>
-</body>
-</html>
+    {% endblock%}
