@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django_jalali.db import models as jmodels
 
 
 # Create your models here.
@@ -26,14 +27,14 @@ class Post(models.Model):
     slug = models.SlugField(max_length=200)
 
     # date
-    publish = models.DateTimeField(default=timezone.now(), verbose_name="تاریخ انتشار")
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
+    publish = jmodels.jDateTimeField(default=timezone.now(), verbose_name="تاریخ انتشار")
+    created = jmodels.jDateTimeField(auto_now_add=True)
+    updated = jmodels.jDateTimeField(auto_now=True)
 
     # choice fields
     status = models.CharField(max_length=2, choices=Status.choices, default=Status.DRAFT, verbose_name="وضعیت")
 
-    objects = models.Manager()
+    objects = jmodels.jManager()
     published = PublishedManager()
 
     class Meta:
