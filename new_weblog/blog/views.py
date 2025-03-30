@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
 from django.views.generic import ListView, DetailView
 from django.views.decorators.http import require_POST
 from .forms import TicketForm, CommentForm, SearchForm
 from .models import Post, Ticket
-from django.db.models import Q
+from django.contrib.postgres.search import SearchVector
 
 
 # Create your views here.
@@ -80,7 +79,7 @@ def post_search(request):
         form = SearchForm(data=request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
-            results = Post.published.filter(Q(description__icontains=query) | Q(title__icontains=query))
+            results = Post.published.annotate(search=SearchVector('title', 'description')).filter(search=query)
 
     context = {
         'query': query,
