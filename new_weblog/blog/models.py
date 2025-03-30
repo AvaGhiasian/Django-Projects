@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django_jalali.db import models as jmodels
 from django.urls import reverse
 from django.forms import ModelForm
+from django_resized import ResizedImageField
 
 
 # Create your models here.
@@ -95,7 +96,7 @@ class Image(models.Model):
     title = models.CharField(max_length=250, null=True, blank=True, verbose_name="عنوان")
     description = models.TextField(verbose_name="توضیحات")
     created = jmodels.jDateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="تاریخ انتشار")
-    image_file = models.ImageField(upload_to="post_images/")
+    image_file = ResizedImageField(upload_to="post_images/", size=[500, 500], quality=75, crop=['middle', 'center'])
 
     class Meta:
         ordering = ['created']
