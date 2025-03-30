@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django_jalali.admin.filters import JDateFieldListFilter
 
-from .models import Post, Ticket, Comment
+from .models import Post, Ticket, Comment, Image
 
 
 # Register your models here.
@@ -35,3 +35,8 @@ class CommentAdmin(admin.ModelAdmin):
     list_filter = ['active', ('created', JDateFieldListFilter), ('updated', JDateFieldListFilter)]
     search_fields = ['name', 'body']
     list_editable = ['active']
+
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ['post', 'title', 'description']
