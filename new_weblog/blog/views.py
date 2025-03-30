@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView
 from django.views.decorators.http import require_POST
-from .forms import TicketForm, CommentForm
+from .forms import TicketForm, CommentForm, SearchForm
 from .models import Post, Ticket
 
 
@@ -33,7 +33,6 @@ def post_detail(request, pk):
 
 
 def index(request):
-
     return render(request, 'blog/index.html')
 
 
@@ -71,3 +70,21 @@ def post_comment(request, post_id):
         'form': form,
     }
     return render(request, "forms/comment.html", context)
+
+
+def post_search(request):
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(data=request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            results1 = Post.published.filter(description__icontains=query)
+            results2 = Post.published.filter(title__icontains=query)
+            results = results1 | results2
+
+    context = {
+        'query': query,
+        'results': results
+    }
+    return render(request, 'blog/search.html', context)

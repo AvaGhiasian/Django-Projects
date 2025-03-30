@@ -36,10 +36,10 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['name', 'body']
-        widgets={
+        widgets = {
             'body': forms.TextInput(attrs={
                 'placeholder': 'متن',
-                'class':'form-control'
+                'class': 'form-control'
             }),
             'name': forms.TextInput(attrs={
                 'placeholder': 'نام',
@@ -48,3 +48,5 @@ class CommentForm(forms.ModelForm):
         }
 
 
+class SearchForm(forms.Form):
+    query = forms.CharField()
