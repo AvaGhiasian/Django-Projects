@@ -29,7 +29,7 @@ class Post(models.Model):
     slug = models.SlugField(max_length=200)
 
     # date
-    publish = jmodels.jDateTimeField(default=timezone.now(), verbose_name="تاریخ انتشار")
+    publish = jmodels.jDateTimeField(default=timezone.now, verbose_name="تاریخ انتشار")
     created = jmodels.jDateTimeField(auto_now_add=True)
     updated = jmodels.jDateTimeField(auto_now=True)
 
