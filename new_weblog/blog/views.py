@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView
 from django.views.decorators.http import require_POST
-from .forms import TicketForm, CommentForm, SearchForm
-from .models import Post, Ticket
+from .forms import TicketForm, CommentForm, SearchForm, CreatePostForm
+from .models import Post, Ticket, Image
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.contrib.postgres.search import TrigramSimilarity
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -92,3 +93,29 @@ def post_search(request):
         'results': results
     }
     return render(request, 'blog/search.html', context)
+
+
+def profile(request):
+    user = request.user
+    posts = Post.published.filter(author=user)
+    context = {
+        'user': user,
+        'posts': posts
+    }
+    return render(request, 'blog/profile.html', context)
+
+
+@login_required
+def create_post(request):
+    if request.method == "POST":
+        form = CreatePostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            Image.objects.create(image_file=form.cleaned_data['image1'], post=post)
+            Image.objects.create(image_file=form.cleaned_data['image2'], post=post)
+            return redirect('blog:profile')
+    else:
+        form = CreatePostForm()
+    return render(request, 'forms/create-post.html', {'form': form})
