@@ -12,7 +12,4 @@ urlpatterns = [
 
     # /music/album/add/
     path('album/add/$', views.AlbumCreate.as_view(), name='album-add'),
-
-    # /music/<album id>/favorite/
-    # path('<int:album_id> +/favorties/', views.favorite, name='favorite'),
 ]
