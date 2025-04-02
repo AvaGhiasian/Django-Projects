@@ -59,7 +59,8 @@ class Book(models.Model):
     # if book name is Harry Potter auto populate to harry-potter
     # db_index: a technical detail, DB will save the value in a way that makes searching them a bit more efficient.
     # so creating a field like this db_index=True makes searching the field quicker.
-    slug = models.SlugField(default="", blank=True, null=False, db_index=True)
+    slug = models.SlugField(default="", blank=True,
+                            null=False, db_index=True, unique=True)
 
     # many to many relation is set up differently behind the scene.
     # in one to many or one to one, 2 tables are involved & info is stored in one of the tables.
@@ -67,6 +68,11 @@ class Book(models.Model):
     # the tables holds one row per connection between country and book.
     # so if a book belongs to 2 countries, 2 rows would be added in between the table.
     published_countries = models.ManyToManyField(Country, related_name="books")
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("book-detail", args=[self.slug])
