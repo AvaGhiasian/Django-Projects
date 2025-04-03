@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from watch_list.api import views
+from ..api import views
 
 urlpatterns = [
     path('list/', views.movie_list, name='movie_list'),
