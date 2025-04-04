@@ -7,6 +7,22 @@ from ..models import WatchList, StreamPlatform
 from .serializers import WatchListSerializer, StreamPlatformSerializer
 
 
+class StreamPlatformAPIView(APIView):
+    def get(self, request):
+        platform = StreamPlatform.objects.all()
+        serializer = StreamPlatformSerializer(
+            platform, many=True, context={'request': request})
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = StreamPlatformSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+
 class StreamPlatformDetailAPIView(APIView):
     def get(self, request, pk):
         try:
@@ -14,9 +30,9 @@ class StreamPlatformDetailAPIView(APIView):
         except StreamPlatform.DoesNotExist:
             return Response({'Error': 'not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = StreamPlatformSerializer(platform)
+        serializer = StreamPlatformSerializer(platform , context={'request': request})
         return Response(serializer.data)
-    
+
     def put(self, request, pk):
         platform = StreamPlatform.objects.get(pk=pk)
         serializer = StreamPlatformSerializer(platform, data=request.data)
@@ -30,23 +46,6 @@ class StreamPlatformDetailAPIView(APIView):
         platform = StreamPlatform.objects.get(pk=pk)
         platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    
-
-
-class StreamPlatformAPIView(APIView):
-    def get(self, request):
-        platform = StreamPlatform.objects.all()
-        serializer = StreamPlatformSerializer(platform, many=True)
-        return Response(serializer.data)
-    
-    def post(self, request):
-        serializer = StreamPlatformSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
 
 
 class WatchListAPIView(APIView):

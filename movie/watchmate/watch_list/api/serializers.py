@@ -9,12 +9,18 @@ class WatchListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class StreamPlatformSerializer(serializers.ModelSerializer):
+class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
     watchlist = WatchListSerializer(many=True, read_only=True)
+    # watchlist = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # watchlist = serializers.StringRelatedField(many=True, read_only=True)
+    # watchlist = serializers.HyperlinkedIdentityField(many=True, read_only=True, view_name='movie_detail')
 
     class Meta:
         model = StreamPlatform
         fields = "__all__"
+        extra_kwargs = {
+            'url': {'view_name': 'platform_detail', 'lookup_field': 'pk'}
+        }
 
 
 # def name_length(value):
