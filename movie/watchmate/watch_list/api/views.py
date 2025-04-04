@@ -7,23 +7,29 @@ from ..models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 
 
-class ReviewDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
-    queryset = Review.objects.all()
+class ReviewListView(generics.ListAPIView):
+    """ GET """
     serializer_class = ReviewSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Review.objects.filter(watchlist=pk)
 
 
-class ReviewView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
-    queryset = Review.objects.all()
+class ReviewCreateView(generics.CreateAPIView):
+    """ POST """
     serializer_class = ReviewSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        movie = WatchList.objects.get(pk=pk)
+        serializer.save(watchlist=movie)
 
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """ GET, PUT, DELETE methods """
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
 
 class StreamPlatformAPIView(APIView):
@@ -106,43 +112,69 @@ class WatchListDetailAPIView(APIView):
         movie.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# @api_view(['GET', 'POST'])
-# def movie_list(request):
-#     if request.method == 'GET':
-#         movies = Movie.objects.all()
-#         serializer = MovieSerializer(movies, many=True)
-#         return Response(serializer.data)
 
-#     if request.method == 'POST':
-#         serializer = MovieSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors)
+"""
+####### Mixins Form #######
+
+class ReviewDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
-# @api_view(['GET', 'PUT', 'DELETE'])
-# def movie_detail(request, pk):
-#     if request.method == 'GET':
-#         try:
-#             movie = Movie.objects.get(pk=pk)
-#         except Movie.DoesNotExist:
-#             return Response({'Error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
+class ReviewView(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
-#         serializer = MovieSerializer(movie)
-#         return Response(serializer.data)
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
-#     if request.method == 'PUT':
-#         movie = Movie.objects.get(pk=pk)
-#         serializer = MovieSerializer(movie, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
-#     if request.method == 'DELETE':
-#         movie = Movie.objects.get(pk=pk)
-#         movie.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
+
+####### Function based views #######
+
+@api_view(['GET', 'POST'])
+def movie_list(request):
+    if request.method == 'GET':
+        movies = Movie.objects.all()
+        serializer = MovieSerializer(movies, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = MovieSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def movie_detail(request, pk):
+    if request.method == 'GET':
+        try:
+            movie = Movie.objects.get(pk=pk)
+        except Movie.DoesNotExist:
+            return Response({'Error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = MovieSerializer(movie)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        movie = Movie.objects.get(pk=pk)
+        serializer = MovieSerializer(movie, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    if request.method == 'DELETE':
+        movie = Movie.objects.get(pk=pk)
+        movie.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+"""
