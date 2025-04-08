@@ -12,6 +12,7 @@ from .permissions import IsAdminOrReadOnly, IsReviewerOrReadOnly
 class ReviewListView(generics.ListAPIView):
     """ GET """
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
