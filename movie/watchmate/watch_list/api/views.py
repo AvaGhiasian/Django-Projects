@@ -3,18 +3,33 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, generics
 from rest_framework.exceptions import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
 
 from ..models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from .permissions import IsAdminOrReadOnly, IsReviewerOrReadOnly
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
 
+class UserReviewView(generics.ListAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    # Filtering against the URL
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(reviewer__username=username)
+
+    # Filtering against query parameters
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        return Review.objects.filter(reviewer__username=username)
 
 class ReviewListView(generics.ListAPIView):
     """ GET """
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewListThrottle, ReviewCreateThrottle]
+    throttle_scope = 'review-detail'
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -55,6 +70,7 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewSerializer
     permission_classes = [IsReviewerOrReadOnly]
     throttle_classes = [ReviewListThrottle, ReviewCreateThrottle]
+    throttle_scope = 'review-detail'
 
 
 class StreamPlatformAPIView(APIView):
