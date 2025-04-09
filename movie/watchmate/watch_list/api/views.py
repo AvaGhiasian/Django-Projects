@@ -1,7 +1,7 @@
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status, generics
+from rest_framework import status, generics, filters
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -9,6 +9,18 @@ from ..models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from .permissions import IsAdminOrReadOnly, IsReviewerOrReadOnly
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
+
+
+class WatchListView(generics.ListAPIView):
+    """ having filter & search option """
+    queryset = WatchList.objects.all()
+    serializer_class = WatchListSerializer
+    filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['title', 'platform__name'] good for ratings, timeing and exact amounts
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'platform__name']  # good for when we're taking input from user
+    ordering_fields = ['avg_rating']
+
 
 class UserReviewView(generics.ListAPIView):
     queryset = Review.objects.all()
@@ -24,12 +36,15 @@ class UserReviewView(generics.ListAPIView):
         username = self.request.query_params.get('username', None)
         return Review.objects.filter(reviewer__username=username)
 
+
 class ReviewListView(generics.ListAPIView):
     """ GET """
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
-    throttle_classes = [ReviewListThrottle, ReviewCreateThrottle]
-    throttle_scope = 'review-detail'
+    # permission_classes = [IsAuthenticated]
+    # throttle_classes = [ReviewListThrottle, ReviewCreateThrottle]
+    # throttle_scope = 'review-detail'
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['reviewer__username', 'active']
 
     def get_queryset(self):
         pk = self.kwargs['pk']
