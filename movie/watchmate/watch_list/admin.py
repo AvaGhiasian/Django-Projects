@@ -10,7 +10,7 @@ from .models import WatchList, StreamPlatform, Review
 class WatchListAdmin(admin.ModelAdmin):
     list_display = ['title', 'platform', 'num_rating', 'avg_rating', 'active']
     ordering = ['title']
-    list_filter = ['created', 'num_rating', 'avg_rating']
+    list_filter = ['platform','created', 'avg_rating']
     search_fields = ['title', 'description']
     date_hierarchy = 'created'
     list_display_links = ['title', 'platform']

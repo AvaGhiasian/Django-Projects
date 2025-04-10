@@ -1,14 +1,17 @@
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status, generics, filters
+from rest_framework import status, generics, filters, viewsets
 from rest_framework.exceptions import ValidationError
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
 
 from ..models import WatchList, StreamPlatform, Review
 from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
 from .permissions import IsAdminOrReadOnly, IsReviewerOrReadOnly
 from .throttling import ReviewCreateThrottle, ReviewListThrottle
+from .pagination import WatchListPagination, WatchListLimitOffsetPagination, WatchListCursorPagination
 
 
 class WatchListView(generics.ListAPIView):
@@ -20,6 +23,7 @@ class WatchListView(generics.ListAPIView):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'platform__name']  # good for when we're taking input from user
     ordering_fields = ['avg_rating']
+    pagination_class = WatchListLimitOffsetPagination
 
 
 class UserReviewView(generics.ListAPIView):
