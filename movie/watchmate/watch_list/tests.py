@@ -71,3 +71,72 @@ class WatchListTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(models.WatchList.objects.count(), 1)
         self.assertEqual(models.WatchList.objects.get().title, 'Example Title')
+
+
+class ReviewTestCase(APITestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='example', password='password123')
+        self.token = Token.objects.get(user__username=self.user)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+        self.stream_platform = models.StreamPlatform.objects.create(name="Netflix", about="#1 streaming platform",
+                                                                    website="https://netflix.com")
+
+        self.watch_list = models.WatchList.objects.create(title="Example Title", description="Example Description",
+                                                          active=True, platform=self.stream_platform)
+
+        self.watch_list2 = models.WatchList.objects.create(title="Example Title 2", description="Example Description 2",
+                                                          active=True, platform=self.stream_platform)
+
+        self.review = models.Review.objects.create(reviewer=self.user, rating=5, description="Review Description",
+                                                   active=True, watchlist=self.watch_list2)
+
+    def test_review_create(self):
+        data = {
+            "review_user": self.user,
+            "rating": 5,
+            "description": "Review Description",
+            "watchlist": self.watch_list,
+            "active": True,
+        }
+
+        response = self.client.post(reverse('review-create', args=(self.watch_list.pk,)), data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(models.Review.objects.count(), 2)
+        self.assertEqual(models.Review.objects.get().rating, 5)
+
+        response = self.client.post(reverse('review-create', args=(self.watch_list.pk,)), data=data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_review_create_unauthenticated(self):
+        data = {
+            "review_user": self.user,
+            "rating": 5,
+            "description": "Review Description",
+            "watchlist": self.watch_list,
+            "active": True,
+        }
+
+        self.client.force_authenticate(user=None)
+        response = self.client.post(reverse('review-create', args=(self.watch_list.pk,)), data=data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def tset_review_update(self):
+        data = {
+            "review_user": self.user,
+            "rating": 4,
+            "description": "Review Description - Updated",
+            "watchlist": self.watch_list,
+            "active": False,
+        }
+
+        response = self.client.put(reverse('review-detail', args=(self.review.pk,)), data=data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_review_list(self):
+        response = self.client.get(reverse('review-list', args=self.watch_list.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_review_detail(self):
+        response = self.client.get(reverse('review-detail', args=self.review.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
