@@ -31,7 +31,7 @@ class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
         model = StreamPlatform
         fields = "__all__"
         extra_kwargs = {
-            'url': {'view_name': 'platform_detail', 'lookup_field': 'pk'}
+            'url': {'view_name': 'platform-detail', 'lookup_field': 'pk'}
         }
 
 
