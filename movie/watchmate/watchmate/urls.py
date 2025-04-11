@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('dashboard/', admin.site.urls),  # admin is easy to guess better to be changed to sth else
     path('watchlist/', include('watch_list.api.urls')),
     path('account/', include('user_app.api.urls')),
 ]
