@@ -173,5 +173,19 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+book_store/.vscode/
+book_store/.idea/
+feedback/.vscode/
+feedback/.idea/
+meetups_website/.vscode/
+meetups_website/.idea/
+monthly_challenges/.vscode/
+monthly_challenges/.idea/
+movie/watchmate/.vscode/
+movie/watchmate/.idea/
+new_weblog/.vscode/
+new_weblog/.idea/
+weblog/.vscode/
+weblog/.idea/
 .vscode/
 .idea/
